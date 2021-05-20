@@ -8,24 +8,24 @@ import (
 func RunServer()  {
 	app := fiber.New()
 
-	app.Get("/student/list/", func(c *fiber.Ctx) error {
-		return api.GetStudentList(c)
-	})
-
 	app.Post("/student/", func(c *fiber.Ctx) error {
 		return api.CreateStudent(c)
 	})
 
+	app.Get("/student/list/", func(c *fiber.Ctx) error {
+		return api.GetStudentList(c)
+	})
+
 	app.Get("/student/:id", func(c *fiber.Ctx) error {
-		return c.SendString("Student Details")
+		return api.GetStudentDetails(c)
 	})
 
 	app.Post("/student/update/:id", func(c *fiber.Ctx) error {
-		return c.SendString("Student Update")
+		return api.UpdateStudent(c)
 	})
 
 	app.Delete("/student/delete/:id", func(c *fiber.Ctx) error {
-		return c.SendString("Student Delete")
+		return api.DeleteStudent(c)
 	})
 
 
