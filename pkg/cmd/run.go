@@ -8,6 +8,10 @@ import (
 func RunServer()  {
 	app := fiber.New()
 
+	app.Post("/user/", func(c *fiber.Ctx) error {
+		return api.CreateUser(c)
+	})
+
 	app.Post("/student/", func(c *fiber.Ctx) error {
 		return api.CreateStudent(c)
 	})
