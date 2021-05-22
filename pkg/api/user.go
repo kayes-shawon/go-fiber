@@ -14,7 +14,14 @@ func CreateUser(c *fiber.Ctx) error {
 		return err
 	}
 	dbCon := db.ConnectDB()
-	//_, err =
+	_, err = dbCon.Model(user).Insert()
+	if err != nil {
+		return err
+	}
+	err = c.JSON(user)
+	if err != nil {
+		return err
+	}
 	//dbCon.Model(user)
 	return nil
 }
