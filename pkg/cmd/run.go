@@ -3,13 +3,23 @@ package cmd
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/kayes-shawon/go-fiber/pkg/api"
+	"github.com/kayes-shawon/go-fiber/pkg/middleware"
 )
 
 func RunServer()  {
 	app := fiber.New()
 
-	app.Post("/user/", func(c *fiber.Ctx) error {
+
+	app.Post("/user/login/", func(c *fiber.Ctx) error {
+		return api.UserLogin(c)
+	})
+
+	app.Post("/user/create", func(c *fiber.Ctx) error {
 		return api.CreateUser(c)
+	})
+
+	app.Use("/student", func(c *fiber.Ctx) error {
+		return middleware.Auth(c)
 	})
 
 	app.Post("/student/", func(c *fiber.Ctx) error {
