@@ -51,6 +51,19 @@ func Encode(data map[string]interface{}) ([]byte, error) {
 	claims.Audiences = []string{"cdfs"}
 	claims.NotBefore = jwt.NewNumericTime(time.Now().Add(-time.Second * 5).Round(time.Second))
 	claims.Issued = jwt.NewNumericTime(time.Now().Round(time.Second))
+	claims.Expires = jwt.NewNumericTime(time.Now().Add(600*time.Second).Round(time.Second))
+	claims.ID = GetJTIId()
+	claims.Set = data
+	privateKey := GetEdDSAPrivateKey(GetKeyBytes("LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1DNENBUUF3QlFZREsyVndCQ0lFSUpVdWRzaCs5c1dGckNFdkJxYmxTYndTbmVXb2VZN2l0QlRRUWI0MHFhTS8KLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQo="))
+	return claims.EdDSASign(privateKey)
+}
+
+func RefreshTokenEncode(data map[string]interface{}) ([]byte, error) {
+	claims := &jwt.Claims{}
+	claims.Issuer = "upay"
+	claims.Audiences = []string{"cdfs"}
+	claims.NotBefore = jwt.NewNumericTime(time.Now().Add(-time.Second * 5).Round(time.Second))
+	claims.Issued = jwt.NewNumericTime(time.Now().Round(time.Second))
 	claims.Expires = jwt.NewNumericTime(time.Now().Add(3600*time.Second).Round(time.Second))
 	claims.ID = GetJTIId()
 	claims.Set = data

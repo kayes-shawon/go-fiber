@@ -6,41 +6,44 @@ import (
 	"github.com/kayes-shawon/go-fiber/pkg/middleware"
 )
 
-func RunServer()  {
-	app := fiber.New()
+func UnRestricted(app *fiber.App)  {
+	userGroup := app.Group("/user", func(c *fiber.Ctx) error {
+		return c.Next()
+	})
 
-
-	app.Post("/user/login/", func(c *fiber.Ctx) error {
+	userGroup.Post("/login/", func(c *fiber.Ctx) error {
 		return api.UserLogin(c)
 	})
 
-	app.Post("/user/create", func(c *fiber.Ctx) error {
+	userGroup.Post("/login-refresh/", func(c *fiber.Ctx) error {
+		return api.UserLoginRefresh(c)
+	})
+
+	userGroup.Post("/create", func(c *fiber.Ctx) error {
 		return api.CreateUser(c)
 	})
+}
 
-	app.Use("/student", func(c *fiber.Ctx) error {
-		return middleware.Auth(c)
-	})
+func AuthRequired(app *fiber.App) {
+	studentGroup := app.Group("/student", middleware.Auth)
 
-	app.Post("/student/", func(c *fiber.Ctx) error {
-		return api.CreateStudent(c)
-	})
+	studentGroup.Post("/create", api.CreateStudent)
 
-	app.Get("/student/list/", func(c *fiber.Ctx) error {
-		return api.GetStudentList(c)
-	})
+	studentGroup.Get("/list/", api.GetStudentList)
 
-	app.Get("/student/:id", func(c *fiber.Ctx) error {
-		return api.GetStudentDetails(c)
-	})
+	studentGroup.Get("/:id", api.GetStudentDetails)
 
-	app.Post("/student/update/:id", func(c *fiber.Ctx) error {
-		return api.UpdateStudent(c)
-	})
+	studentGroup.Post("/update/:id", api.UpdateStudent)
 
-	app.Delete("/student/delete/:id", func(c *fiber.Ctx) error {
-		return api.DeleteStudent(c)
-	})
+	studentGroup.Delete("/delete/:id", api.DeleteStudent)
+}
+
+func RunServer()  {
+	app := fiber.New()
+
+	UnRestricted(app)
+
+	AuthRequired(app)
 
 
 	app.Listen(":8080")
